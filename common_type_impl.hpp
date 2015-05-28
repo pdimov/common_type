@@ -61,7 +61,7 @@ template<class T> struct common_type_impl2<T, T>
     typedef T type;
 };
 
-// class type
+// one of the operands is a class type, try conversions in both directions
 
 template<class T, class U> struct ct_class
 {
@@ -96,55 +96,33 @@ template<class T, class U> struct common_type_impl2: public boost::conditional<
 {
 };
 
-// arithmetic or enumeration types
-
-template<class T, class U> struct ct_arithmetic
-{
-    BOOST_STATIC_CONSTANT( bool, at = boost::is_arithmetic<T>::value );
-    BOOST_STATIC_CONSTANT( bool, au = boost::is_arithmetic<U>::value );
-
-    BOOST_STATIC_CONSTANT( bool, et = boost::is_enum<T>::value );
-    BOOST_STATIC_CONSTANT( bool, eu = boost::is_enum<U>::value );
-
-    BOOST_STATIC_CONSTANT( bool, value = ( at || et ) && ( au || eu ) );
-};
+// pointers
 
 template<class T, class U> struct common_type_impl4;
 
 template<class T, class U> struct common_type_impl3: public boost::conditional<
-    ct_arithmetic<T, U>::value,
-    common_arithmetic_type<T, U>,
-    common_type_impl4<T, U> >::type
-{
-};
-
-// pointers
-
-template<class T, class U> struct common_type_impl5;
-
-template<class T, class U> struct common_type_impl4: public boost::conditional<
     boost::is_pointer<T>::value || boost::is_pointer<U>::value,
     composite_pointer_type<T, U>,
-    common_type_impl5<T, U> >::type
+    common_type_impl4<T, U> >::type
 {
 };
 
 // pointers to members
 
-template<class T, class U> struct common_type_impl6;
+template<class T, class U> struct common_type_impl5;
 
 template<class T, class U> struct composite_member_pointer_type;
 
-template<class T, class U> struct common_type_impl5: public boost::conditional<
+template<class T, class U> struct common_type_impl4: public boost::conditional<
     boost::is_member_pointer<T>::value || boost::is_member_pointer<U>::value,
     composite_member_pointer_type<T, U>,
-    common_type_impl6<T, U> >::type
+    common_type_impl5<T, U> >::type
 {
 };
 
-// no more options
+// arithmetic types (including class types w/ conversions to arithmetic and enums)
 
-template<class T, class U> struct common_type_impl6
+template<class T, class U> struct common_type_impl5: public common_arithmetic_type<T, U>
 {
 };
 

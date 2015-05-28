@@ -88,6 +88,11 @@ struct C6
     operator E2() const { return e2; }
 };
 
+template<class T> struct C7
+{
+    operator T() const { return 0; }
+};
+
 static void test_class_types()
 {
     test<C1C2&, C1&, C1C2>();
@@ -295,6 +300,38 @@ static void test_arithmetic_types()
 
     test<int const, int const, int>();
     test<int const, long const, long>();
+
+    //
+
+    test<C7<char>, char, char>();
+    test<C7<char>, unsigned char, unsigned char>();
+    test<C7<char>, short, short>();
+    test<C7<char>, unsigned short, unsigned short>();
+    test<C7<char>, int, int>();
+    test<C7<char>, unsigned int, unsigned int>();
+    test<C7<char>, long long, long long>();
+    test<C7<char>, unsigned long long, unsigned long long>();
+    test<C7<char>, float, float>();
+    test<C7<char>, double, double>();
+    test<C7<char>, long double, long double>();
+
+#if !defined( BOOST_MSVC ) || ( BOOST_MSVC > 1800 )
+
+    // msvc-8.0, msvc-10.0, msvc-11.0, msvc-12.0 fail to compile x? C7<T>(): C7<U>()
+
+    test<C7<char>, C7<char>, C7<char> >();
+    test<C7<char>, C7<unsigned char>, int>();
+    test<C7<char>, C7<short>, int>();
+    test<C7<char>, C7<unsigned short>, int>();
+    test<C7<char>, C7<int>, int>();
+    test<C7<char>, C7<unsigned int>, unsigned int>();
+    test<C7<char>, C7<long long>, long long>();
+    test<C7<char>, C7<unsigned long long>, unsigned long long>();
+    test<C7<char>, C7<float>, float>();
+    test<C7<char>, C7<double>, double>();
+    test<C7<char>, C7<long double>, long double>();
+
+#endif
 }
 
 static void test_pointer_types()
@@ -314,11 +351,17 @@ static void test_pointer_types()
 
     test<int const* const*, int volatile* const*, int const volatile* const*>();
 
+#if !defined( BOOST_MSVC ) || ( BOOST_MSVC != 1600 )
+
+    // add_rvalue_reference fails for int[] under msvc-10.0
+
     test<int[], int[], int*>();
     test<int[], int const[], int const*>();
     test<int volatile[], int const[], int const volatile*>();
 
     test<int volatile* const[], int const* const[], int const volatile* const*>();
+
+#endif
 
     test<C3*, C2*, C2*>();
     test<C2*, C3*, C2*>();
