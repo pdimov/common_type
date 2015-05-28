@@ -7,11 +7,62 @@
 #include <boost/type_traits/is_same.hpp>
 #include <boost/type_traits/is_void.hpp>
 #include <boost/type_traits/is_base_of.hpp>
+#include <boost/config.hpp>
+#include <cstddef>
 
 namespace boost
 {
 
 template<class T, class U> struct composite_pointer_type;
+
+// same type
+
+template<class T> struct composite_pointer_type<T*, T*>
+{
+    typedef T* type;
+};
+
+// nullptr_t
+
+#if !defined( BOOST_NO_CXX11_NULLPTR )
+
+#if !defined( BOOST_NO_CXX11_DECLTYPE ) && ( ( defined( __clang__ ) && !defined( _LIBCPP_VERSION ) ) || defined( __INTEL_COMPILER ) )
+
+template<class T> struct composite_pointer_type<T*, decltype(nullptr)>
+{
+    typedef T* type;
+};
+
+template<class T> struct composite_pointer_type<decltype(nullptr), T*>
+{
+    typedef T* type;
+};
+
+template<> struct composite_pointer_type<decltype(nullptr), decltype(nullptr)>
+{
+    typedef decltype(nullptr) type;
+};
+
+#else
+
+template<class T> struct composite_pointer_type<T*, std::nullptr_t>
+{
+    typedef T* type;
+};
+
+template<class T> struct composite_pointer_type<std::nullptr_t, T*>
+{
+    typedef T* type;
+};
+
+template<> struct composite_pointer_type<std::nullptr_t, std::nullptr_t>
+{
+    typedef std::nullptr_t type;
+};
+
+#endif
+
+#endif // !defined( BOOST_NO_CXX11_NULLPTR )
 
 namespace detail
 {
