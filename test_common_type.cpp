@@ -99,6 +99,7 @@ static void test_class_types()
     test<C1C2, C2, C1C2>();
 
     test<C2&, C3&, C2>();
+    test<C3&, C2&, C2>();
 
     test<int, C4, C4>();
     test<C4, int, C4>();
