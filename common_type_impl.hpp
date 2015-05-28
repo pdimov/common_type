@@ -5,6 +5,7 @@
 #include "remove_cv_ref.hpp"
 #include "common_arithmetic_type.hpp"
 #include "composite_pointer_type.hpp"
+#include "composite_member_pointer_type.hpp"
 #include <boost/type_traits/is_lvalue_reference.hpp>
 #include <boost/type_traits/is_class.hpp>
 #include <boost/type_traits/is_union.hpp>
@@ -110,8 +111,6 @@ template<class T, class U> struct common_type_impl3: public boost::conditional<
 // pointers to members
 
 template<class T, class U> struct common_type_impl5;
-
-template<class T, class U> struct composite_member_pointer_type;
 
 template<class T, class U> struct common_type_impl4: public boost::conditional<
     boost::is_member_pointer<T>::value || boost::is_member_pointer<U>::value,

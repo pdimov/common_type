@@ -370,11 +370,27 @@ static void test_pointer_types()
     test<C2 const*, C3 volatile*, C2 const volatile*>();
 }
 
+static void test_member_pointer_types()
+{
+    test<int C1::*, int const C1::*, int const C1::*>();
+    test<int C1::*, int volatile C1::*, int volatile C1::*>();
+    test<int const C1::*, int volatile C1::*, int const volatile C1::*>();
+
+    test<int C2::*, int const C3::*, int const C3::*>();
+    test<int C2::*, int volatile C3::*, int volatile C3::*>();
+    test<int const C2::*, int volatile C3::*, int const volatile C3::*>();
+
+    test<int C3::*, int const C2::*, int const C3::*>();
+    test<int C3::*, int volatile C2::*, int volatile C3::*>();
+    test<int const C3::*, int volatile C2::*, int const volatile C3::*>();
+}
+
 int main()
 {
     test_class_types();
     test_arithmetic_types();
     test_pointer_types();
+    test_member_pointer_types();
 
     return boost::report_errors();
 }
