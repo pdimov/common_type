@@ -5,11 +5,55 @@
 #include <boost/type_traits/remove_pointer.hpp>
 #include <boost/type_traits/is_base_of.hpp>
 #include <boost/type_traits/conditional.hpp>
+#include <boost/config.hpp>
+#include <cstddef>
 
 namespace boost
 {
 
 template<class T, class U> struct composite_member_pointer_type;
+
+// nullptr_t
+
+#if !defined( BOOST_NO_CXX11_NULLPTR )
+
+#if !defined( BOOST_NO_CXX11_DECLTYPE ) && ( ( defined( __clang__ ) && !defined( _LIBCPP_VERSION ) ) || defined( __INTEL_COMPILER ) )
+
+template<class C, class T> struct composite_member_pointer_type<T C::*, decltype(nullptr)>
+{
+    typedef T C::* type;
+};
+
+template<class C, class T> struct composite_member_pointer_type<decltype(nullptr), T C::*>
+{
+    typedef T C::* type;
+};
+
+template<> struct composite_member_pointer_type<decltype(nullptr), decltype(nullptr)>
+{
+    typedef decltype(nullptr) type;
+};
+
+#else
+
+template<class C, class T> struct composite_member_pointer_type<T C::*, std::nullptr_t>
+{
+    typedef T C::* type;
+};
+
+template<class C, class T> struct composite_member_pointer_type<std::nullptr_t, T C::*>
+{
+    typedef T C::* type;
+};
+
+template<> struct composite_member_pointer_type<std::nullptr_t, std::nullptr_t>
+{
+    typedef std::nullptr_t type;
+};
+
+#endif
+
+#endif // !defined( BOOST_NO_CXX11_NULLPTR )
 
 namespace detail
 {
