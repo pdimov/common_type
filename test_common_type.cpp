@@ -1,4 +1,12 @@
-﻿#include "common_type_impl.hpp"
+﻿//
+//  Copyright 2015 Peter Dimov
+//
+//  Distributed under the Boost Software License, Version 1.0.
+//  See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt
+//
+
+#include "common_type_impl.hpp"
 #include <boost/type_traits/add_rvalue_reference.hpp>
 #include <boost/type_traits/decay.hpp>
 #include <boost/core/lightweight_test.hpp>

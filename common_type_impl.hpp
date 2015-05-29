@@ -1,6 +1,14 @@
 #ifndef BOOST_TYPE_TRAITS_DETAIL_COMMON_TYPE_HPP_INCLUDED
 #define BOOST_TYPE_TRAITS_DETAIL_COMMON_TYPE_HPP_INCLUDED
 
+//
+//  Copyright 2015 Peter Dimov
+//
+//  Distributed under the Boost Software License, Version 1.0.
+//  See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt
+//
+
 #include "tp_identity.hpp"
 #include "common_arithmetic_type.hpp"
 #include "composite_pointer_type.hpp"
