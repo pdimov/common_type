@@ -1,6 +1,8 @@
 #ifndef BOOST_TYPE_TRAITS_DETAIL_COMMON_ARITHMETIC_TYPE_HPP_INCLUDED
 #define BOOST_TYPE_TRAITS_DETAIL_COMMON_ARITHMETIC_TYPE_HPP_INCLUDED
 
+#include <boost/config.hpp>
+
 namespace boost
 {
 
@@ -118,6 +120,42 @@ template<> struct arithmetic_type<16>
     typedef char (&result_type) [16];
 };
 
+#if !defined( BOOST_NO_CXX11_CHAR16_T )
+
+template<> struct arithmetic_type<17>
+{
+    typedef char16_t type;
+    typedef char (&result_type) [17];
+};
+
+#endif
+
+#if !defined( BOOST_NO_CXX11_CHAR32_T )
+
+template<> struct arithmetic_type<18>
+{
+    typedef char32_t type;
+    typedef char (&result_type) [18];
+};
+
+#endif
+
+#if defined( BOOST_HAS_INT128 )
+
+template<> struct arithmetic_type<19>
+{
+    typedef __int128 type;
+    typedef char (&result_type) [19];
+};
+
+template<> struct arithmetic_type<20>
+{
+    typedef unsigned __int128 type;
+    typedef char (&result_type) [20];
+};
+
+#endif
+
 template<class T, class U> class common_arithmetic_impl
 {
 private:
@@ -138,6 +176,19 @@ private:
     static arithmetic_type<14>::result_type select( arithmetic_type<14>::type );
     static arithmetic_type<15>::result_type select( arithmetic_type<15>::type );
     static arithmetic_type<16>::result_type select( arithmetic_type<16>::type );
+
+#if !defined( BOOST_NO_CXX11_CHAR16_T )
+    static arithmetic_type<17>::result_type select( arithmetic_type<17>::type );
+#endif
+
+#if !defined( BOOST_NO_CXX11_CHAR32_T )
+    static arithmetic_type<18>::result_type select( arithmetic_type<18>::type );
+#endif
+
+#if defined( BOOST_HAS_INT128 )
+    static arithmetic_type<19>::result_type select( arithmetic_type<19>::type );
+    static arithmetic_type<20>::result_type select( arithmetic_type<20>::type );
+#endif
 
     static bool cond();
 

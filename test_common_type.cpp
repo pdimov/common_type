@@ -37,14 +37,14 @@ template<class T, class U, class E> void test()
 {
     typedef typename common_type<T, U>::type C;
 
-    BOOST_TEST_TRAIT_TRUE(( boost::is_same<C, E> ));
-    BOOST_TEST_TRAIT_TRUE(( boost::is_convertible<T, C> ));
-    BOOST_TEST_TRAIT_TRUE(( boost::is_convertible<U, C> ));
+    BOOST_TEST_TRAIT_TRUE((boost::is_same<C, E>));
+    BOOST_TEST_TRAIT_TRUE((boost::is_convertible<T, C>));
+    BOOST_TEST_TRAIT_TRUE((boost::is_convertible<U, C>));
 
 #if !defined( BOOST_NO_CXX11_DECLTYPE )
 
     typedef typename common_type_decltype<T, U>::type E2;
-    BOOST_TEST_TRAIT_TRUE(( boost::is_same<C, E2> ));
+    BOOST_TEST_TRAIT_TRUE((boost::is_same<C, E2>));
 
 #endif
 }
@@ -89,6 +89,11 @@ struct C6
 };
 
 template<class T> struct C7
+{
+    operator T() const { return 0; }
+};
+
+template<class T> struct C8
 {
     operator T() const { return 0; }
 };
@@ -320,6 +325,7 @@ static void test_arithmetic_types()
     // msvc-8.0, msvc-10.0, msvc-11.0, msvc-12.0 fail to compile x? C7<T>(): C7<U>()
 
     test<C7<char>, C7<char>, C7<char> >();
+    test<C7<char>, C8<char>, int>();
     test<C7<char>, C7<unsigned char>, int>();
     test<C7<char>, C7<short>, int>();
     test<C7<char>, C7<unsigned short>, int>();
@@ -330,6 +336,40 @@ static void test_arithmetic_types()
     test<C7<char>, C7<float>, float>();
     test<C7<char>, C7<double>, double>();
     test<C7<char>, C7<long double>, long double>();
+
+#endif
+
+#if defined( BOOST_HAS_INT128 )
+
+    test<__int128, char, __int128>();
+    test<__int128, unsigned char, __int128>();
+    test<__int128, short, __int128>();
+    test<__int128, unsigned short, __int128>();
+    test<__int128, int, __int128>();
+    test<__int128, unsigned int, __int128>();
+    test<__int128, long long, __int128>();
+    test<__int128, unsigned long long, __int128>();
+    test<__int128, float, float>();
+    test<__int128, double, double>();
+    test<__int128, long double, long double>();
+    test<__int128, E1, __int128>();
+    test<__int128, __int128, __int128>();
+    test<__int128, unsigned __int128, unsigned __int128>();
+
+    test<unsigned __int128, char, unsigned __int128>();
+    test<unsigned __int128, unsigned char, unsigned __int128>();
+    test<unsigned __int128, short, unsigned __int128>();
+    test<unsigned __int128, unsigned short, unsigned __int128>();
+    test<unsigned __int128, int, unsigned __int128>();
+    test<unsigned __int128, unsigned int, unsigned __int128>();
+    test<unsigned __int128, long long, unsigned __int128>();
+    test<unsigned __int128, unsigned long long, unsigned __int128>();
+    test<unsigned __int128, float, float>();
+    test<unsigned __int128, double, double>();
+    test<unsigned __int128, long double, long double>();
+    test<unsigned __int128, E1, unsigned __int128>();
+    test<unsigned __int128, __int128, unsigned __int128>();
+    test<unsigned __int128, unsigned __int128, unsigned __int128>();
 
 #endif
 }
