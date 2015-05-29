@@ -2,7 +2,6 @@
 #define BOOST_TYPE_TRAITS_DETAIL_COMMON_TYPE_HPP_INCLUDED
 
 #include "tp_identity.hpp"
-#include "remove_cv_ref.hpp"
 #include "common_arithmetic_type.hpp"
 #include "composite_pointer_type.hpp"
 #include "composite_member_pointer_type.hpp"
@@ -16,7 +15,6 @@
 #include <boost/type_traits/is_pointer.hpp>
 #include <boost/type_traits/is_member_pointer.hpp>
 #include <boost/type_traits/conditional.hpp>
-#include <boost/type_traits/remove_cv.hpp>
 #include <boost/type_traits/decay.hpp>
 
 namespace boost
@@ -31,8 +29,8 @@ namespace common_type_detail
 template<class T, class U> struct common_type_impl2;
 
 template<class T, class U> struct common_type_impl: public common_type_impl2<
-    typename boost::remove_cv< typename boost::decay<T>::type >::type,
-    typename boost::remove_cv< typename boost::decay<U>::type >::type
+    typename boost::decay<T>::type,
+    typename boost::decay<U>::type
 >
 {
 };

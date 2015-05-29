@@ -1,6 +1,5 @@
 ﻿#include "common_type_impl.hpp"
 #include <boost/type_traits/add_rvalue_reference.hpp>
-#include <boost/type_traits/remove_cv.hpp>
 #include <boost/type_traits/decay.hpp>
 #include <boost/core/lightweight_test.hpp>
 #include <boost/core/lightweight_test_trait.hpp>
@@ -12,7 +11,7 @@ template<class T> typename boost::add_rvalue_reference<T>::type declval();
 template<class T, class U> struct common_type_decltype
 {
     typedef decltype( declval<bool>()? declval<T>(): declval<U>() ) C;
-    typedef typename boost::remove_cv< typename boost::decay<C>::type >::type type;
+    typedef typename boost::decay<C>::type type;
 };
 
 #endif
@@ -42,6 +41,24 @@ template<class T, class U, class E> void test()
     BOOST_TEST_TRAIT_TRUE((boost::is_convertible<U, C>));
 
 #if !defined( BOOST_NO_CXX11_DECLTYPE )
+
+    typedef typename common_type_decltype<T, U>::type E2;
+    BOOST_TEST_TRAIT_TRUE((boost::is_same<C, E2>));
+
+#endif
+}
+
+template<class T, class U, class E> void test_()
+{
+    typedef typename common_type<T, U>::type C;
+
+    BOOST_TEST_TRAIT_TRUE((boost::is_same<C, E>));
+    BOOST_TEST_TRAIT_TRUE((boost::is_convertible<T, C>));
+    BOOST_TEST_TRAIT_TRUE((boost::is_convertible<U, C>));
+
+#if !defined( BOOST_NO_CXX11_DECLTYPE ) && ( !defined( BOOST_MSVC ) || BOOST_MSVC > 1800 )
+
+    // decltype(?:) on msvc up to 12.0 doesn't yield correct results for cv member pointers
 
     typedef typename common_type_decltype<T, U>::type E2;
     BOOST_TEST_TRAIT_TRUE((boost::is_same<C, E2>));
@@ -414,15 +431,16 @@ static void test_member_pointer_types()
 {
     test<int C1::*, int const C1::*, int const C1::*>();
     test<int C1::*, int volatile C1::*, int volatile C1::*>();
-    test<int const C1::*, int volatile C1::*, int const volatile C1::*>();
+
+    test_<int const C1::*, int volatile C1::*, int const volatile C1::*>();
 
     test<int C2::*, int const C3::*, int const C3::*>();
     test<int C2::*, int volatile C3::*, int volatile C3::*>();
-    test<int const C2::*, int volatile C3::*, int const volatile C3::*>();
+    test_<int const C2::*, int volatile C3::*, int const volatile C3::*>();
 
-    test<int C3::*, int const C2::*, int const C3::*>();
-    test<int C3::*, int volatile C2::*, int volatile C3::*>();
-    test<int const C3::*, int volatile C2::*, int const volatile C3::*>();
+    test_<int C3::*, int const C2::*, int const C3::*>();
+    test_<int C3::*, int volatile C2::*, int volatile C3::*>();
+    test_<int const C3::*, int volatile C2::*, int const volatile C3::*>();
 }
 
 int main()
