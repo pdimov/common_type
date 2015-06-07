@@ -14,7 +14,7 @@
 namespace boost
 {
 
-namespace detail
+namespace type_traits_detail
 {
 
 template<int I> struct arithmetic_type;
@@ -164,7 +164,7 @@ template<> struct arithmetic_type<20>
 
 #endif
 
-template<class T, class U> class common_arithmetic_impl
+template<class T, class U> class common_arithmetic_type
 {
 private:
 
@@ -205,12 +205,7 @@ public:
     typedef typename arithmetic_type< sizeof(select( cond()? T(): U() )) >::type type;
 };
 
-} // namespace detail
-
-template<class T, class U> struct common_arithmetic_type
-{
-    typedef typename detail::common_arithmetic_impl<T, U>::type type;
-};
+} // namespace type_traits_detail
 
 } // namespace boost
 

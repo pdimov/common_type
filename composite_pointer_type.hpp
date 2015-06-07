@@ -21,6 +21,9 @@
 namespace boost
 {
 
+namespace type_traits_detail
+{
+
 template<class T, class U> struct composite_pointer_type;
 
 // same type
@@ -134,6 +137,8 @@ template<class T, class U> struct composite_pointer_type<T*, U*>
 
     >::type::type * type;
 };
+
+} // namespace type_traits_detail
 
 } // namespace boost
 

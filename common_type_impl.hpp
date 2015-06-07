@@ -28,42 +28,16 @@
 namespace boost
 {
 
-namespace common_type_detail
+namespace type_traits_detail
 {
 
-// ?: preserves lvalue references, but std::common_type applies decay as a last
-// step, so references are lost; we may as well decay in the beginning
+// the arguments to common_type_impl have already been passed through decay<>
 
-template<class T, class U> struct common_type_impl2;
-
-template<class T, class U> struct common_type_impl: public common_type_impl2<
-    typename boost::decay<T>::type,
-    typename boost::decay<U>::type
->
-{
-};
-
-
-// void
-
-template<> struct common_type_impl2<void, void>
-{
-    typedef void type;
-};
-
-template<class T> struct common_type_impl2<T, void>
-{
-    typedef T type;
-};
-
-template<class T> struct common_type_impl2<void, T>
-{
-    typedef T type;
-};
+template<class T, class U> struct common_type_impl;
 
 // same type
 
-template<class T> struct common_type_impl2<T, T>
+template<class T> struct common_type_impl<T, T>
 {
     typedef T type;
 };
@@ -96,7 +70,7 @@ template<class T, class U> struct common_type_class: public boost::conditional<
 {
 };
 
-template<class T, class U> struct common_type_impl2: public boost::conditional<
+template<class T, class U> struct common_type_impl: public boost::conditional<
     ct_class<T, U>::value,
     common_type_class<T, U>,
     common_type_impl3<T, U> >::type
@@ -131,7 +105,7 @@ template<class T, class U> struct common_type_impl5: public common_arithmetic_ty
 {
 };
 
-} // namespace common_type_detail
+} // namespace type_traits_detail
 
 } // namespace boost
 

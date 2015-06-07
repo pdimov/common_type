@@ -19,6 +19,9 @@
 namespace boost
 {
 
+namespace type_traits_detail
+{
+
 template<class T, class U> struct composite_member_pointer_type;
 
 // nullptr_t
@@ -63,9 +66,6 @@ template<> struct composite_member_pointer_type<std::nullptr_t, std::nullptr_t>
 
 #endif // !defined( BOOST_NO_CXX11_NULLPTR )
 
-namespace detail
-{
-
 template<class C1, class C2> struct common_member_class;
 
 template<class C> struct common_member_class<C, C>
@@ -84,21 +84,21 @@ template<class C1, class C2> struct common_member_class
     >::type type;
 };
 
-} // namespace detail
-
 template<class C1, class T1, class C2, class T2> struct composite_member_pointer_type<T1 C1::*, T2 C2::*>
 {
 private:
 
-    typedef typename boost::composite_pointer_type<T1*, T2*>::type CPT;
+    typedef typename composite_pointer_type<T1*, T2*>::type CPT;
     typedef typename boost::remove_pointer<CPT>::type CT;
 
-    typedef typename detail::common_member_class<C1, C2>::type CB;
+    typedef typename common_member_class<C1, C2>::type CB;
 
 public:
 
     typedef CT CB::* type;
 };
+
+} // namespace type_traits_detail
 
 } // namespace boost
 

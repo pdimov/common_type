@@ -6,72 +6,21 @@
 //  http://www.boost.org/LICENSE_1_0.txt
 //
 
-#include "common_type_impl.hpp"
-#include <boost/type_traits/add_rvalue_reference.hpp>
-#include <boost/type_traits/decay.hpp>
+#include "common_type.hpp"
+#include <boost/type_traits/is_same.hpp>
+#include <boost/type_traits/is_convertible.hpp>
 #include <boost/core/lightweight_test.hpp>
 #include <boost/core/lightweight_test_trait.hpp>
-
-template<class T> typename boost::add_rvalue_reference<T>::type declval();
-
-#if !defined( BOOST_NO_CXX11_DECLTYPE )
-
-template<class T, class U> struct common_type_decltype
-{
-    typedef decltype( declval<bool>()? declval<T>(): declval<U>() ) C;
-    typedef typename boost::decay<C>::type type;
-};
-
-#endif
-
-#if defined(USE_DECLTYPE)
-
-template<class T, class U> struct common_type: public common_type_decltype<T, U>
-{
-};
-
-#else
-
-template<class T, class U> struct common_type: public boost::common_type_detail::common_type_impl<T, U>
-{
-};
-
-#endif
 
 //
 
 template<class T, class U, class E> void test()
 {
-    typedef typename common_type<T, U>::type C;
+    typedef typename boost::common_type<T, U>::type C;
 
     BOOST_TEST_TRAIT_TRUE((boost::is_same<C, E>));
     BOOST_TEST_TRAIT_TRUE((boost::is_convertible<T, C>));
     BOOST_TEST_TRAIT_TRUE((boost::is_convertible<U, C>));
-
-#if !defined( BOOST_NO_CXX11_DECLTYPE )
-
-    typedef typename common_type_decltype<T, U>::type E2;
-    BOOST_TEST_TRAIT_TRUE((boost::is_same<C, E2>));
-
-#endif
-}
-
-template<class T, class U, class E> void test_()
-{
-    typedef typename common_type<T, U>::type C;
-
-    BOOST_TEST_TRAIT_TRUE((boost::is_same<C, E>));
-    BOOST_TEST_TRAIT_TRUE((boost::is_convertible<T, C>));
-    BOOST_TEST_TRAIT_TRUE((boost::is_convertible<U, C>));
-
-#if !defined( BOOST_NO_CXX11_DECLTYPE ) && ( !defined( BOOST_MSVC ) || BOOST_MSVC > 1800 )
-
-    // decltype(?:) on msvc up to 12.0 doesn't yield correct results for cv member pointers
-
-    typedef typename common_type_decltype<T, U>::type E2;
-    BOOST_TEST_TRAIT_TRUE((boost::is_same<C, E2>));
-
-#endif
 }
 
 //
@@ -416,17 +365,11 @@ static void test_pointer_types()
 
     test<int const* const*, int volatile* const*, int const volatile* const*>();
 
-#if !defined( BOOST_MSVC ) || ( BOOST_MSVC != 1600 )
-
-    // add_rvalue_reference fails for int[] under msvc-10.0
-
     test<int[], int[], int*>();
     test<int[], int const[], int const*>();
     test<int volatile[], int const[], int const volatile*>();
 
     test<int volatile* const[], int const* const[], int const volatile* const*>();
-
-#endif
 
     test<C3*, C2*, C2*>();
     test<C2*, C3*, C2*>();
@@ -440,15 +383,20 @@ static void test_member_pointer_types()
     test<int C1::*, int const C1::*, int const C1::*>();
     test<int C1::*, int volatile C1::*, int volatile C1::*>();
 
-    test_<int const C1::*, int volatile C1::*, int const volatile C1::*>();
-
     test<int C2::*, int const C3::*, int const C3::*>();
     test<int C2::*, int volatile C3::*, int volatile C3::*>();
-    test_<int const C2::*, int volatile C3::*, int const volatile C3::*>();
 
-    test_<int C3::*, int const C2::*, int const C3::*>();
-    test_<int C3::*, int volatile C2::*, int volatile C3::*>();
-    test_<int const C3::*, int volatile C2::*, int const volatile C3::*>();
+#if !defined(BOOST_MSVC) || BOOST_MSVC < 1600 || BOOST_MSVC > 1800
+
+    test<int const C1::*, int volatile C1::*, int const volatile C1::*>();
+    test<int const C2::*, int volatile C3::*, int const volatile C3::*>();
+
+    test<int C3::*, int const C2::*, int const C3::*>();
+    test<int C3::*, int volatile C2::*, int volatile C3::*>();
+
+    test<int const C3::*, int volatile C2::*, int const volatile C3::*>();
+
+#endif
 }
 
 int main()
